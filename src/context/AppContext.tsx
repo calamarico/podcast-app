@@ -1,22 +1,28 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useContext, type ReactNode } from "react";
+import { useFetchPodcasts, type Podcast } from "../hooks/useFetchPodcasts";
 
 type AppContextType = {
-  user: string | null;
-  setUser: (user: string | null) => void;
+  podcasts: Podcast[];
+  loading: boolean;
+  error: string | null;
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<string | null>(null);
+  const { podcasts, loading, error } = useFetchPodcasts();
 
-  return <AppContext.Provider value={{ user, setUser }}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider value={{ podcasts, loading, error }}>
+      {children}
+    </AppContext.Provider>
+  );
 };
 
 export const useAppContext = () => {
   const context = useContext(AppContext);
   if (!context) {
-    throw new Error('useAppContext debe usarse dentro de un AppProvider');
+    throw new Error("useAppContext debe usarse dentro de un AppProvider");
   }
   return context;
 };
